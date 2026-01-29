@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Walentykowe pytanie</title>
+    <style>
+        /* Tło z gradientem */
+        body {
+            background: linear-gradient(to top, #ffb6c1, #ff69b4);
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Biały kwadrat na środku */
+        .content-box {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+            width: 500px; /* Stała szerokość dla kwadratu */
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #d81b60;
+        }
+
+        p {
+            font-size: 20px;
+            color: #d81b60;
+            margin: 20px 0;
+        }
+
+        /* Kwadraty dla odpowiedzi */
+        .button {
+            background-color: #d81b60;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 8px;
+            margin: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .button:hover {
+            background-color: #c2185b;
+        }
+
+        /* Animacja dla emotek */
+        .emoji {
+            position: absolute;
+            font-size: 40px;
+            animation: moveUp 10s infinite;
+            opacity: 1;
+        }
+
+        @keyframes moveUp {
+            0% {
+                opacity: 1;
+                transform: translateY(100vh); /* Początek animacji od dołu strony */
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100vh); /* Kończy na górze ekranu */
+            }
+        }
+
+        /* Styl przycisków */
+        .button-container {
+            display: flex;
+            justify-content: center;
+        }
+
+        .button-container .button {
+            margin: 0 10px;
+        }
+
+        /* Przycisk do zmiany głośności muzyki */
+        .audio-control {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 10px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+        }
+
+        .audio-control input {
+            margin-left: 10px;
+            width: 100px;
+        }
+
+        /* Nowy styl dla suwaczka */
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%; /* Suwak rozciąga się na całą szerokość wewnątrz kwadratu */
+            height: 12px;
+            border-radius: 10px;
+            background: linear-gradient(to right, #ffb6c1, #ff69b4);
+            outline: none;
+            transition: background 0.3s ease;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: 20px 0;
+            pointer-events: auto; /* Suwak działa tylko na przesuwanie */
+        }
+
+        input[type="range"]::-webkit-slider-runnable-track {
+            height: 12px;
+            border-radius: 10px;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #fff;
+            border: 2px solid #ff69b4;
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+        }
+
+        input[type="range"]:focus {
+            outline: none;
+        }
+
+        /* Styl tekstu w zależności od procentu */
+        #loveAnswer {
+            font-size: 20px;
+            font-weight: bold;
+            transition: font-size 0.5s ease;
+            color: #d81b60;
+        }
+
+        /* Animacja dla kwadracika z tekstem */
+        .answer-box {
+            margin-top: 20px;
+            padding: 10px;
+            background: linear-gradient(to top right, #ff7a8b, #ff69b4); /* Różowy gradient */
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 1s forwards, bounce 2s infinite; /* Dodajemy bounce animation */
+            color: white; /* Kolor tekstu na biały */
+        }
+
+        /* Animacja wchodzenia kwadracika */
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Animacja "skakania" kwadracika */
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        /* Ukryte elementy */
+        .hidden {
+            display: none;
+        }
+
+        /* Styl dla animowanego tekstu z obietnicą */
+        .promise-text {
+            font-size: 30px;
+            font-weight: bold;
+            color: #ff69b4;
+            animation: bounce 2s infinite;
+        }
+
+        /* Styl dla emotek */
+        .heart-emoji {
+            font-size: 40px;
+            animation: heartBounce 0.5s infinite;
+        }
+
+        @keyframes heartBounce {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.2);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="content-box" id="initialText">
+        <h1>Natalka, mam pytanie...</h1>
+        <p>Lubisz mnie?</p>
+        
+        <!-- Przyciski Tak/Nie -->
+        <div class="button-container">
+            <button class="button" id="yesButton">Tak</button>
+            <button class="button" id="noButton">Nie</button>
+        </div>
+    </div>
+
+    <div class="content-box hidden" id="loveQuestion">
+        <h1>Natalka, a mam pytanie...</h1>
+        <p>Jak bardzo mnie kochasz?</p>
+        
+        <!-- Suwak -->
+        <input type="range" id="loveRange" min="0" max="1000" step="1" value="50">
+        <p>Tak bardzo: <span id="lovePercent">50%</span></p>
+
+        <!-- Kwadracik z odpowiedzią -->
+        <div class="answer-box" id="loveAnswerBox">
+            <p id="loveAnswer">Jestem bardzo szczęśliwy, że cię mam!</p>
+        </div>
+
+        <!-- Dalej -->
+        <button class="button" id="nextButton">Dalej</button>
+    </div>
+
+    <div class="content-box hidden" id="valentineQuestion">
+        <h1>Natalka, mam pytanie...</h1>
+        <p>Czy będziesz moją Walentynką 14 lutego 2026 roku? 🌹</p>
+
+        <!-- Przyciski Tak/Nie -->
+        <div class="button-container">
+            <button class="button" id="yesValentineButton">Tak</button>
+            <button class="button" id="noValentineButton">Nie</button>
+        </div>
+    </div>
+
+    <div class="content-box hidden" id="finalMessage">
+        <h1>Natalka...</h1>
+        <p>Kocham cię najmocniej na całym świecie myszko!! ❤️❤️</p>
+
+        <!-- Animowany tekst z obietnicą -->
+        <p class="promise-text">Obiecuję, że te Walentynki będą super!!! 🌹</p>
+
+        <!-- Emotki serduszek -->
+        <div class="heart-emoji">💖</div>
+        <div class="heart-emoji">❤️</div>
+        <div class="heart-emoji">💌</div>
+        <div class="heart-emoji">💘</div>
+        <div class="heart-emoji">💝</div>
+    </div>
+
+    <!-- Muzyka -->
+    <audio id="music" loop>
+        <source src="path_to_your_song.mp3" type="audio/mp3">
+        Your browser does not support the audio element.
+    </audio>
+
+    <!-- Kontrola głośności -->
+    <div class="audio-control">
+        <label for="volume">Głośność:</label>
+        <input type="range" id="volume" name="volume" min="0" max="1" step="0.01" value="0.5" onchange="setVolume()">
+    </div>
+
+    <script>
+        // Funkcja ustawiająca głośność
+        function setVolume() {
+            var audio = document.getElementById("music");
+            var volumeControl = document.getElementById("volume");
+            audio.volume = volumeControl.value;
+        }
+
+        // Odtwarzanie muzyki po załadowaniu strony
+        window.onload = function() {
+            var audio = document.getElementById("music");
+            audio.play();
+            createEmoji();  // Rozpocznij tworzenie emotek od razu po załadowaniu strony
+        };
+
+        // Funkcja do losowego przemieszczania przycisku "Nie"
+        let noClickCount = 0;
+        function moveNoButton(buttonId) {
+            noClickCount++;
+            let randomLeft = Math.floor(Math.random() * 90) + 5 + '%'; // Losowa pozycja na osi X
+            let randomTop = Math.floor(Math.random() * 90) + 5 + '%'; // Losowa pozycja na osi Y
+            const noButton = document.getElementById(buttonId);
+            noButton.style.position = 'absolute';
+            noButton.style.left = randomLeft;
+            noButton.style.top = randomTop;
+
+            if (noClickCount >= 10) {
+                noButton.style.display = 'none'; // Po 10 kliknięciach, przycisk znika
+            }
+        }
+
+        // Dodajemy nasłuchiwanie na kliknięcie przycisku "Nie"
+        document.getElementById('noButton').addEventListener('click', function() {
+            moveNoButton('noButton');
+        });
+        document.getElementById('noValentineButton').addEventListener('click', function() {
+            moveNoButton('noValentineButton');
+        });
+
+        // Funkcja po kliknięciu "Tak" na suwaku
+        document.getElementById('yesButton').addEventListener('click', function() {
+            document.getElementById('initialText').classList.add('hidden');  // Ukryj początkowy tekst
+            document.getElementById('loveQuestion').classList.remove('hidden');  // Pokaż pytanie o miłość
+        });
+
+        // Funkcja po kliknięciu "Dalej"
+        document.getElementById('nextButton').addEventListener('click', function() {
+            document.getElementById('loveQuestion').classList.add('hidden'); // Ukryj pytanie o miłość
+            document.getElementById('valentineQuestion').classList.remove('hidden'); // Pokaż pytanie o Walentynki
+        });
+
+        // Funkcja po kliknięciu "Tak" na pytanie o Walentynki
+        document.getElementById('yesValentineButton').addEventListener('click', function() {
+            document.getElementById('valentineQuestion').classList.add('hidden'); // Ukryj pytanie o Walentynki
+            document.getElementById('finalMessage').classList.remove('hidden'); // Pokaż finalny tekst
+        });
+
+        // Funkcja po kliknięciu "Nie" na pytanie o Walentynki
+        document.getElementById('noValentineButton').addEventListener('click', moveNoButton);
+
+        // Tworzenie emotek
+        function createEmoji() {
+            const emojiList = ['💖', '💌', '❤️', '🌹', '🥰']; // Lista emotek
+            setInterval(function() {
+                const emoji = document.createElement('div');
+                const randomEmoji = emojiList[Math.floor(Math.random() * emojiList.length)];
+                emoji.classList.add('emoji');
+                emoji.innerHTML = randomEmoji;
+
+                // Losowe położenie
+                let randomLeft = Math.floor(Math.random() * 90) + 5 + '%'; // Losowa pozycja na osi X
+                let randomTop = Math.floor(Math.random() * 90) + 5 + '%'; // Losowa pozycja na osi Y
+                emoji.style.left = randomLeft;
+                emoji.style.top = randomTop;
+
+                // Dodajemy emotkę do body
+                document.body.appendChild(emoji);
+
+                // Usuwamy emotkę po zakończeniu animacji
+                setTimeout(() => {
+                    emoji.remove();
+                }, 10000); // 10 sekund po dodaniu (czas trwania animacji)
+            }, 1000); // Co 1 sekundę tworzymy nową emotkę
+        }
+
+        // Suwak i procent
+        const loveRange = document.getElementById('loveRange');
+        const lovePercent = document.getElementById('lovePercent');
+        const loveAnswer = document.getElementById('loveAnswer');
+        const loveAnswerBox = document.getElementById('loveAnswerBox');
+
+        loveRange.addEventListener('input', function() {
+            lovePercent.textContent = loveRange.value + '%';
+
+            // Odpowiedź na podstawie procentu
+            let percent = loveRange.value;
+            if (percent < 30) {
+                loveAnswer.textContent = "Aha to nieźle Xd";
+            } else if (percent < 60) {
+                loveAnswer.textContent = "Też cię lubię Natalka!";
+            } else if (percent < 100) {
+                loveAnswer.textContent = "Kocham Cię bardzo!";
+            } else if (percent < 500) {
+                loveAnswer.textContent = "Kocham cię najmocniej na całym świecie! 💖";
+            } else {
+                loveAnswer.textContent = "Ale i tak ja kocham cię mocniej hehe!! 🚀💖";
+            }
+
+            // Animacja w odpowiedzi na procent
+            loveAnswerBox.style.animation = 'fadeIn 1s forwards, bounce 2s infinite'; // Dodajemy bounce animation
+        });
+    </script>
+
+</body>
+</html>
